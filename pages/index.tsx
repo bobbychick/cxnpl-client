@@ -16,7 +16,7 @@ export default function Home() {
       {status === "authenticated" && session && (
         <>
           Signed in as {session?.user?.email} <br/>
-          <button onClick={() => signOut( {callbackUrl: `${process.env.DJANGO_URL}/`})}>Sign out</button>
+          <button onClick={() => signOut( {callbackUrl: `${process.env.NEXTAUTH_URL}/`})}>Sign out</button>
         </>
       )}
             {status === "unauthenticated"  && !session && (
