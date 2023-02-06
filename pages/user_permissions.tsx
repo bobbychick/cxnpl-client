@@ -1,13 +1,13 @@
 import { signIn,signOut,useSession }  from "next-auth/react";
 import {useState, useEffect } from 'react'
+import { UserDataType } from "./company";
 
 export default function Company() {
-    const [data, setData] = useState(null)
+    const [data, setData] = useState<UserDataType>()
     const {data: session, status} = useSession();
 
     useEffect(() => {
-        console.log(session?.user)
-        fetch(`http://127.0.0.1:8000/user_info/${session?.user.email}`)
+        fetch(`${process.env.DJANGO_URL}/user_info/${session!!.user?.email}`)
         .then((res) => res.json())
         .then ((data) => {
             setData(data)
@@ -38,7 +38,7 @@ export default function Company() {
     {status === "authenticated" && session && (
         <>
         Signed in as {session?.user?.email} <br/>
-        <button onClick={() => signOut( {callbackUrl: 'http://localhost:3000/'})}>Sign out</button>
+        <button onClick={() => signOut( {callbackUrl: `${process.env.DJANGO_URL}/`})}>Sign out</button>
         </>
     )}
     </>

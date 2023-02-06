@@ -1,10 +1,13 @@
 import { signIn,signOut,useSession }  from "next-auth/react";
 import {useState, useEffect } from 'react'
 import Link from 'next/link'
+import { CompanyDataType, UserDataType } from "./company";
+
+
 
 export default function Company() {
-    const [companyData, setCompanyData] = useState(null)
-    const [userData, setUserData] = useState([])
+    const [companyData, setCompanyData] = useState<CompanyDataType>()
+    const [userData, setUserData] = useState<UserDataType>()
     const {data: session, status} = useSession();
     const [currRole, setRole] = useState("user")
 
@@ -12,8 +15,8 @@ export default function Company() {
     useEffect(() => {
         Promise.all([
             // Move API calls to API folder - time permitting 
-            fetch(`http://127.0.0.1:8000/company/${session?.user?.email}`),
-            fetch(`http://127.0.0.1:8000/user_info/${session?.user?.email}`)
+            fetch(`${process.env.DJANGO_URL}/company/${session?.user?.email}`),
+            fetch(`${process.env.DJANGO_URL}/user_info/${session?.user?.email}`)
         ])
         .then(([resCompanies, resUsers]) => 
             Promise.all([resCompanies.json(), resUsers.json()])
@@ -26,7 +29,7 @@ export default function Company() {
         })
     }, [session?.user?.email])
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event:any) => {
         // Prevents the form from submitting and refreshing the page
         event.preventDefault()
 
@@ -41,7 +44,7 @@ export default function Company() {
         console.log(data)
         const JSONdata = JSON.stringify(data)
 
-        const endpoint = 'http://127.0.0.1:8000/accounts/register'
+        const endpoint = `${process.env.DJANGO_URL}/accounts/register`
 
         const options = {
             method: 'POST',
@@ -60,7 +63,7 @@ export default function Company() {
 
 
 
-    if (userData.role ==="user") return (<div>
+    if (userData?.role ==="user") return (<div>
         You are a base user and therefore unable to create other users.
         <Link href="/"><button >Click here to return to dashboard</button></Link>
     </div>)
@@ -68,15 +71,15 @@ export default function Company() {
     return (
         <>
         <div>
-            <h1>Create a user account in the company: {userData.company} for which you are a {userData.role}</h1>
-            <h1>As a company {userData.role}, you can create:</h1>
+            <h1>Create a user account in the company: {userData?.company} for which you are a {userData?.role}</h1>
+            <h1>As a company {userData?.role}, you can create:</h1>
             <ul>
-            {(userData.role === "owner" || userData.role === "company_admin") && session && (
+            {(userData?.role === "owner" || userData?.role === "company_admin") && session && (
             <div>A user</div>
         
             )}
             <>
-            {userData.role === "owner" && session && (
+            {userData?.role === "owner" && session && (
                 <div>An administrator</div>
                 )}
                 </>
@@ -98,7 +101,7 @@ export default function Company() {
             <input type="text" id="email" name="email" />
             
             <label htmlFor="company">Company (Default): </label>
-            <input type="text" id="company_readable_id" name="company" readOnly="readonly" value={companyData?.company_readable_id}/>
+            <input type="text" id="company_readable_id" name="company" readOnly={true} value={companyData?.company_readable_id}/>
 
             
             <label htmlFor="role" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">User type</label>
@@ -106,11 +109,11 @@ export default function Company() {
                 setRole(e.target.value);
             }} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
             <option selected>Choose a user type</option>
-            {(userData.role === "owner" || userData.role === "company_admin") && session && (
+            {(userData?.role === "owner" || userData?.role === "company_admin") && session && (
             <option value="user">User</option>
         
             )}
-            {(userData.role === "owner") && session && (
+            {(userData?.role === "owner") && session && (
                 <>
                 <option value="owner">Owner</option>
                 <option value="admin">Admin</option>
@@ -126,7 +129,7 @@ export default function Company() {
     {status === "authenticated" && session && (
         <>
         Signed in as {session?.user?.email} <br/>
-        <button onClick={() => signOut( {callbackUrl: 'http://localhost:3000/'})}>Sign out</button>
+        <button onClick={() => signOut( {callbackUrl: `${process.env.DJANGO_URL}/`})}>Sign out</button>
         </>
     )}
     </>

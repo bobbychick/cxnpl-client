@@ -24,12 +24,14 @@ const authOptions: NextAuthOptions = {
 
         try {
           const response = await axios.post(
-            'http://127.0.0.1:8000/api/social/login/google/',
+            `${process.env.DJANGO_URL}/api/social/login/google/`,
             {
               access_token: account.access_token,
               id_token: account.id_token,
             },
-          )
+          );
+          // eslint-disable-next-line 
+          // @ts-ignore
           user.access_token =response.data.access_token;
 
           return true;
@@ -42,6 +44,8 @@ const authOptions: NextAuthOptions = {
 
     async jwt({token, user}) {
       if (user) {
+        // eslint-disable-next-line 
+        // @ts-ignore
         token.access_token = user.access_token;
         token.uid = user.id;
       }
@@ -49,13 +53,17 @@ const authOptions: NextAuthOptions = {
     },
 
     async redirect({url, baseUrl}) {
-      url = 'http://127.0.0.1:3000'
+      url = `${process.env.DJANGO_URL}`
       return url
     },
 
     async session({session, token}) {
+      // eslint-disable-next-line 
+    // @ts-ignore
       session.access_token = token.access_token;
       if (session?.user) {
+        // eslint-disable-next-line 
+        // @ts-ignore
         session.user.id = token.uid;
       }
       return session;

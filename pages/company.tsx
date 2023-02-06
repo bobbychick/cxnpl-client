@@ -1,13 +1,33 @@
 import { signIn,signOut,useSession }  from "next-auth/react";
 import {useState, useEffect } from 'react'
 import Link from 'next/link'
-import { isTemplateSpan } from "typescript";
+
+export type UserDataType = {
+    username:string;
+    company:string;
+    role:string;
+    is_company_admin:boolean;
+    user_permissions:string[];
+}
+
+
+export type CompanyDataType = {
+    account_funds:string;
+    company_readable_id:string;
+    owner:string;
+    company_name:string;
+}
 
 export default function Company() {
-    const [companyData, setCompanyData] = useState({})
-    const [userData, setUserData] = useState({})
+    const [companyData, setCompanyData] = useState<CompanyDataType>()
+    const [userData, setUserData] = useState<UserDataType>()
+    const [companyNameData, setCompanyNameData] = useState<string>()
+    const [companyReadableID, setCompanyReadableID] = useState<string>()
+    const [owner, setOwner] = useState<string>()
+
     const {data: session, status} = useSession();
-    const [allUserData, setAllUserData] = useState()
+    const [allUserData, setAllUserData] = useState<string[]>()
+    const [fetched, setFetched] = useState(false)
 
 
     useEffect(() => {
@@ -15,8 +35,8 @@ export default function Company() {
             // To Do - Future
             // Move API calls to API folder which will allow for cleaner code and
             // separation of client and api logic
-            fetch(`http://127.0.0.1:8000/company/${session?.user?.email}`),
-            fetch(`http://127.0.0.1:8000/user_info/${session?.user?.email}`)
+            fetch(`${process.env.DJANGO_URL}/company/${session?.user?.email}`),
+            fetch(`${process.env.DJANGO_URL}/user_info/${session?.user?.email}`)
         ])
         .then(([resCompanies, resUsers]) => 
             Promise.all([resCompanies.json(), resUsers.json()])
@@ -24,17 +44,18 @@ export default function Company() {
         .then (([dataCompanies, dataUsers]) => {
             setCompanyData(dataCompanies)
             setUserData(dataUsers)
-            setAllUserData(companyData.all_users)
+            console.log(dataCompanies)
+            setAllUserData(dataCompanies.all_users)
         })
     }, [session?.user])
 
-    const handleDeleteUser = async (event) => {
+    const handleDeleteUser = async (currUser:string) => {
 
         const data = {
-            user: event.target.thisUser.value,
+            user: currUser,
         }
         const JSONdata = JSON.stringify(data)
-        const endpoint = 'http://127.0.0.1:8000/accounts/delete'
+        const endpoint = `${process.env.DJANGO_URL}/accounts/delete`
 
         const options = {
             method: 'DELETE',
@@ -44,21 +65,23 @@ export default function Company() {
             body:JSONdata,
         }
 
+        const response = await fetch(endpoint, options)
+
     }
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event:any) => {
         // Prevents the form from submitting and refreshing the page
         event.preventDefault()
 
         const data = {
-            company_name:event.target.company_name.value,
-            company_readable_id:event.target.company_readable_id.value,
-            owner:event.target.owner.value,
+            company_name:companyNameData,
+            company_readable_id:companyReadableID,
+            owner:owner,
         }
         console.log(data)
         const JSONdata = JSON.stringify(data)
 
-        const endpoint = 'http://127.0.0.1:8000/company/create'
+        const endpoint = `${process.env.DJANGO_URL}/company/create`
 
         const options = {
             method: 'POST',
@@ -81,18 +104,19 @@ export default function Company() {
     // implemented server-side. 
     // Users that create a company default to its owner and the user's company is set
     // to the created company
-    if (companyData.company_name === "No Company") return (
+
+    if (companyData && companyData.company_name === "No Company") return (
         <>
         <p> No company data, fill out this form to create a company:</p>
         <form onSubmit={handleSubmit}>
-            <label htmlFor="company_name">Company Name: </label>
-            <input type="text" id="company_name" name="company_name" />
+            <label >Company Name: </label>
+            <input value={companyNameData} onChange={(e) => setCompanyNameData(e.target.value)} type="text"/>
 
-            <label htmlFor="company_readable_id">Company ID: </label>
-            <input type="text" id="company_readable_id" name="company_readable_id" />
+            <label>Company ID: </label>
+            <input value={companyReadableID} onChange={(e) => setCompanyReadableID(e.target.value)} type="text"/>
 
-            <label htmlFor="owner">Owner: </label>
-            <input readOnly="readonly" value={userData.username} type="text" id="owner" name="owner" />
+            <label>Owner: </label>
+            <input readOnly={true} value={userData!!.username} onChange={(e) => setOwner(e.target.value)} type="text"/>
             <button type="submit">Submit</button>
         </form>
 
@@ -104,10 +128,10 @@ export default function Company() {
         <>
         <div>
             <h1>Authentication status: {status}</h1>
-            <h2>Username {userData.username}</h2>
-            <h2>Company: {userData.company}</h2>
-            <h2>Role: {userData.role}</h2>
-            <h2>Bank funds: {companyData.account_funds}</h2>
+            <h2>Username {userData?.username}</h2>
+            <h2>Company: {userData?.company}</h2>
+            <h2>Role: {userData?.role}</h2>
+            <h2>Bank funds: {companyData?.account_funds}</h2>
 
         </div>
 
@@ -115,7 +139,7 @@ export default function Company() {
         {/* Only company owners and admins will be allowed to create a user  */}
         {/* Currently this is client security only, however this should be 
         implemented server-side to improve security */}
-        {(userData.role === "owner" || userData.role === "company_admin") && session && (
+        {(userData?.role === "owner" || userData?.role === "company_admin") && session && (
             <Link href="/create_account"><button>Create accounts for employees</button></Link>
         )}
 
@@ -129,11 +153,11 @@ export default function Company() {
         <ul>
             {allUserData?.map((currUser, index) =>(
                 <li key = {index}>
-                {(userData.role === "owner" || userData.role === "company_admin") && session && (
-                    <form onSubmit={handleDeleteUser}>
-                        <label htmlFor="thisUser">{currUser} </label>
-                        <button type="submit">Delete User</button>
-                    </form>
+                {(userData?.role === "owner" || userData?.role === "company_admin") && session && (
+                    <>
+                    <label>{currUser}</label>
+                    <button onClick={() => handleDeleteUser(currUser)} type="submit">Delete User</button>
+                    </>
                 )}
                 </li>
             ))}
@@ -145,7 +169,7 @@ export default function Company() {
     {status === "authenticated" && session && (
         <>
         Signed in as {session?.user?.email} <br/>
-        <button onClick={() => signOut( {callbackUrl: 'http://localhost:3000/'})}>Sign out</button>
+        <button onClick={() => signOut( {callbackUrl: `${process.env.DJANGO_URL}/`})}>Sign out</button>
         </>
     )}
     </>
