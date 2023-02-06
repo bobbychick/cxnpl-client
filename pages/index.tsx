@@ -22,7 +22,7 @@ export default function Home() {
             {status === "unauthenticated"  && !session && (
         <>
           Not signed in<br/>
-          <button onClick={() => signIn( 'google', {callbackUrl: `${process.env.NEXTAUTH_URL}/api/auth/google/`})}>Sign in for master users</button>
+          <button onClick={() => signIn( 'google', {callbackUrl: `${process.env.NEXTAUTH_URL}/api/auth/google`})}>Sign in for master users</button>
           <button><Link href="login">Click here to login as a user</Link></button>
         </>
        )};
