@@ -31,12 +31,13 @@ export default function Company() {
 
 
     useEffect(() => {
+        console.log(process.env.DJANGO_URL)
         Promise.all([
             // To Do - Future
             // Move API calls to API folder which will allow for cleaner code and
             // separation of client and api logic
-            fetch(`${process.env.DJANGO_URL}/company/${session?.user?.email}`),
-            fetch(`${process.env.DJANGO_URL}/user_info/${session?.user?.email}`)
+            fetch(`https://cxnpl-server-production.up.railway.app/company/${session?.user?.email}`),
+            fetch(`https://cxnpl-server-production.up.railway.app/user_info/${session?.user?.email}`)
         ])
         .then(([resCompanies, resUsers]) => 
             Promise.all([resCompanies.json(), resUsers.json()])
@@ -44,7 +45,6 @@ export default function Company() {
         .then (([dataCompanies, dataUsers]) => {
             setCompanyData(dataCompanies)
             setUserData(dataUsers)
-            console.log(dataCompanies)
             setAllUserData(dataCompanies.all_users)
         })
     }, [session?.user])
