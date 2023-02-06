@@ -52,10 +52,10 @@ const authOptions: NextAuthOptions = {
       return token;
     },
 
-    // async redirect({url}) {
-    //   url = `${process.env.NEXTAUTH_URL}`
-    //   return url
-    // },
+    async redirect({url}) {
+      url = `${process.env.NEXTAUTH_URL}`
+      return url
+    },
 
     async session({session, token}) {
       // eslint-disable-next-line 
