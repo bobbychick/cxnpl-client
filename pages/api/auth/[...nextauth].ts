@@ -52,8 +52,8 @@ const authOptions: NextAuthOptions = {
       return token;
     },
 
-    async redirect({url, baseUrl}) {
-      url = `${process.env.DJANGO_URL}`
+    async redirect({url}) {
+      url = `${process.env.NEXTAUTH_URL}`
       return url
     },
 

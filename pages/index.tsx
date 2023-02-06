@@ -16,13 +16,13 @@ export default function Home() {
       {status === "authenticated" && session && (
         <>
           Signed in as {session?.user?.email} <br/>
-          <button onClick={() => signOut( {callbackUrl: 'http://localhost:3000/'})}>Sign out</button>
+          <button onClick={() => signOut( {callbackUrl: `${process.env.DJANGO_URL}/`})}>Sign out</button>
         </>
       )}
             {status === "unauthenticated"  && !session && (
         <>
           Not signed in<br/>
-          <button onClick={() => signIn()}>Sign in for master users</button>
+          <button onClick={() => signIn( 'google', {callbackUrl: `${process.env.NEXTAUTH_URL}/api/auth/google`})}>Sign in for master users</button>
           <button><Link href="login">Click here to login as a user</Link></button>
         </>
        )};
