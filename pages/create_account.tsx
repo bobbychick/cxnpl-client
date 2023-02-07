@@ -15,8 +15,8 @@ export default function Company() {
     useEffect(() => {
         Promise.all([
             // Move API calls to API folder - time permitting 
-            fetch(`https://cxnpl-server-production.up.railway.app/company/${session?.user?.email}`),
-            fetch(`https://cxnpl-server-production.up.railway.app/user_info/${session?.user?.email}`)
+            fetch(`${process.env.DJANGO_URL}/company/${session?.user?.email}`),
+            fetch(`${process.env.DJANGO_URL}/user_info/${session?.user?.email}`)
             // fetch(`http://127.0.0.1:8000/company/${session?.user?.email}`),
             // fetch(`http://127.0.0.1:8000/user_info/${session?.user?.email}`)
         ])
@@ -47,7 +47,7 @@ export default function Company() {
         const JSONdata = JSON.stringify(data)
 
         // const endpoint = `http://127.0.0.1:8000/accounts/register`
-        const endpoint = `https://cxnpl-server-production.up.railway.app/accounts/register`
+        const endpoint = `${process.env.DJANGO_URL}/accounts/register`
 
         const options = {
             method: 'POST',

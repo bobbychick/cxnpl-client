@@ -36,8 +36,8 @@ export default function Company() {
             // To Do - Future
             // Move API calls to API folder which will allow for cleaner code and
             // separation of client and api logic
-            fetch(`https://cxnpl-server-production.up.railway.app/company/${session?.user?.email}`),
-            fetch(`https://cxnpl-server-production.up.railway.app/user_info/${session?.user?.email}`)
+            fetch(`${process.env.DJANGO_URL}/company/${session?.user?.email}`),
+            fetch(`${process.env.DJANGO_URL}/user_info/${session?.user?.email}`)
             // fetch(`http://127.0.0.1:8000/company/${session?.user?.email}`),
             // fetch(`http://127.0.0.1:8000/user_info/${session?.user?.email}`)
         ])
@@ -59,7 +59,7 @@ export default function Company() {
         }
         const JSONdata = JSON.stringify(data)
         // const endpoint = `http://127.0.0.1:8000/accounts/delete`
-        const endpoint = `https://cxnpl-server-production.up.railway.app/accounts/delete`
+        const endpoint = `${process.env.DJANGO_URL}/accounts/delete`
 
         const options = {
             method: 'DELETE',
@@ -91,7 +91,7 @@ export default function Company() {
         console.log(data)
         const JSONdata = JSON.stringify(data)
 
-        const endpoint = `https://cxnpl-server-production.up.railway.app/company/create`
+        const endpoint = `${process.env.DJANGO_URL}/company/create`
         // const endpoint = `http://127.0.0.1:8000/company/create`
 
         const options = {

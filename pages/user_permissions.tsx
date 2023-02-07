@@ -8,7 +8,7 @@ export default function Company() {
     const [userPermissions, setUserPermissions] = useState<string[]>([]);
 
     useEffect(() => {
-        fetch(`https://cxnpl-server-production.up.railway.app/user_info/${session!!.user?.email}`)
+        fetch(`${process.env.DJANGO_URL}/user_info/${session!!.user?.email}`)
         // fetch(`http://127.0.0.1:8000/user_info/${session!!.user?.email}`)
         .then((res) => res.json())
         .then ((data) => {
@@ -27,9 +27,7 @@ export default function Company() {
             <h2>Username {data.username}</h2>
             <h2>Company: {data.company}</h2>
             <h2>Role: {data.role}</h2>
-            {/* Add logic to convert # to role name */}
-            <h2>Company Admin: {data.is_company_admin}</h2>
-            <h2>User Permission:</h2>
+            <h2>User Permissions:</h2>
             {userPermissions!!.map((permission:string, index:number) =>(
                 <li key = {index}>
                     <>
