@@ -24,6 +24,7 @@ export default function Company() {
     const [companyNameData, setCompanyNameData] = useState<string>()
     const [companyReadableID, setCompanyReadableID] = useState<string>()
     const [owner, setOwner] = useState<string>()
+    const [newState, setNewState] = useState(false)
 
     const {data: session, status} = useSession();
     const [allUserData, setAllUserData] = useState<string[]>()
@@ -31,13 +32,14 @@ export default function Company() {
 
 
     useEffect(() => {
-        console.log(process.env.DJANGO_URL)
         Promise.all([
             // To Do - Future
             // Move API calls to API folder which will allow for cleaner code and
             // separation of client and api logic
             fetch(`https://cxnpl-server-production.up.railway.app/company/${session?.user?.email}`),
             fetch(`https://cxnpl-server-production.up.railway.app/user_info/${session?.user?.email}`)
+            // fetch(`http://127.0.0.1:8000/company/${session?.user?.email}`),
+            // fetch(`http://127.0.0.1:8000/user_info/${session?.user?.email}`)
         ])
         .then(([resCompanies, resUsers]) => 
             Promise.all([resCompanies.json(), resUsers.json()])
@@ -47,7 +49,7 @@ export default function Company() {
             setUserData(dataUsers)
             setAllUserData(dataCompanies.all_users)
         })
-    }, [session?.user])
+    }, [session?.user,newState])
 
     const handleDeleteUser = async (currUser:string) => {
 
@@ -55,7 +57,8 @@ export default function Company() {
             user: currUser,
         }
         const JSONdata = JSON.stringify(data)
-        const endpoint = `${process.env.DJANGO_URL}/accounts/delete`
+        // const endpoint = `http://127.0.0.1:8000/accounts/delete`
+        const endpoint = `https://cxnpl-server-production.up.railway.app/accounts/delete`
 
         const options = {
             method: 'DELETE',
@@ -66,9 +69,15 @@ export default function Company() {
         }
 
         const response = await fetch(endpoint, options)
+        if (response.status === 200) {
+            setNewState(true)
+        }
+        alert("User deleted")
+        console.log(response)
 
     }
 
+    // Handles logic to create a company and assign the creater as the owner
     const handleSubmit = async (event:any) => {
         // Prevents the form from submitting and refreshing the page
         event.preventDefault()
@@ -81,7 +90,8 @@ export default function Company() {
         console.log(data)
         const JSONdata = JSON.stringify(data)
 
-        const endpoint = `${process.env.DJANGO_URL}/company/create`
+        const endpoint = `https://cxnpl-server-production.up.railway.app/company/create`
+        // const endpoint = `https://cxnpl-server-production.up.railway.app/company/create`
 
         const options = {
             method: 'POST',
@@ -148,8 +158,7 @@ export default function Company() {
     {/* Lists out all employees in a users current company. Owners and company administrators
     should be able to delete users */}
     <div>Here is a list of all employees in your organization:
-        <li>
-        
+    
         <ul>
             {allUserData?.map((currUser, index) =>(
                 <li key = {index}>
@@ -161,9 +170,8 @@ export default function Company() {
                 )}
                 </li>
             ))}
-        </ul>;
+        </ul>
 
-        </li>
     </div>
 
     {status === "authenticated" && session && (
