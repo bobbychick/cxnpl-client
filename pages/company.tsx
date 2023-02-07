@@ -175,7 +175,6 @@ export default function Company() {
                 </li>
             ))}
         </ul>
-
     </div>
 
     {status === "authenticated" && session && (

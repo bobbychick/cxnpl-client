@@ -119,7 +119,7 @@ export default function Company() {
             {(userData?.role === "owner") && session && (
                 <>
                 <option value="owner">Owner</option>
-                <option value="admin">Admin</option>
+                <option value="company_admin">Admin</option>
                 </>
         
             )}
