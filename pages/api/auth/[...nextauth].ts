@@ -24,8 +24,8 @@ const authOptions: NextAuthOptions = {
 
         try {
           const response = await axios.post(
-            `${process.env.DJANGO_URL}/api/social/login/google/`,
-            // `https://cxnpl-server-production.up.railway.app/api/social/login/google/`,
+            // `${process.env.DJANGO_URL}/api/social/login/google/`,
+            `https://cxnpl-server-production.up.railway.app/api/social/login/google/`,
             {
               access_token: account.access_token,
               id_token: account.id_token,

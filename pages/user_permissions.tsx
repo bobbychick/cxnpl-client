@@ -8,7 +8,7 @@ export default function Company() {
     const [userPermissions, setUserPermissions] = useState<string[]>([]);
 
     useEffect(() => {
-        fetch(`${process.env.DJANGO_URL}/user_info/${session!!.user?.email}`)
+        fetch(`https://cxnpl-server-production.up.railway.app/user_info/${session!!.user?.email}`)
         // fetch(`http://127.0.0.1:8000/user_info/${session!!.user?.email}`)
         .then((res) => res.json())
         .then ((data) => {

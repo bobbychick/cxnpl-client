@@ -17,6 +17,10 @@ export default function Home() {
         <>
           Signed in as {session?.user?.email} <br/>
           <button onClick={() => signOut( {callbackUrl: `${process.env.NEXTAUTH_URL}/`})}>Sign out</button>
+        <h1>
+          <button><Link href="/company"> View your company</Link></button>  
+        </h1>
+          <button><Link href="/user_permissions">View your permissions here</Link></button>
         </>
       )}
             {status === "unauthenticated"  && !session && (
@@ -27,13 +31,7 @@ export default function Home() {
           <button><Link href="login">Click here to login as a user</Link></button>
         </>
        )};
-      {/* <h1>
-      <button><Link href="/login">Please press this button to sign in</Link></button>
-      </h1> */}
-      <h1>
-      <button><Link href="/company"> View your company</Link></button>
-      </h1>
-      <button><Link href="/user_permissions">View your permissions here</Link></button>
+
 
     </div>
     
