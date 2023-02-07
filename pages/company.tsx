@@ -48,6 +48,7 @@ export default function Company() {
             setCompanyData(dataCompanies)
             setUserData(dataUsers)
             setAllUserData(dataCompanies.all_users)
+            setOwner(dataUsers.username)
         })
     }, [session?.user,newState])
 
@@ -91,7 +92,7 @@ export default function Company() {
         const JSONdata = JSON.stringify(data)
 
         const endpoint = `https://cxnpl-server-production.up.railway.app/company/create`
-        // const endpoint = `https://cxnpl-server-production.up.railway.app/company/create`
+        // const endpoint = `http://127.0.0.1:8000/company/create`
 
         const options = {
             method: 'POST',
@@ -104,6 +105,9 @@ export default function Company() {
         const response = await fetch(endpoint, options)
 
         const result = await response.json()
+        if (response.status === 200) {
+            setNewState(true)
+        }
         alert("Company created successfully")
 
     }
@@ -126,7 +130,7 @@ export default function Company() {
             <input value={companyReadableID} onChange={(e) => setCompanyReadableID(e.target.value)} type="text"/>
 
             <label>Owner: </label>
-            <input readOnly={true} value={userData!!.username} onChange={(e) => setOwner(e.target.value)} type="text"/>
+            <input defaultValue={userData!!.username} onChange={(e) => setOwner(e.target.value)} type="text"/>
             <button type="submit">Submit</button>
         </form>
 

@@ -26,8 +26,8 @@ export default function Company() {
         .then (([dataCompanies, dataUsers]) => {
             setCompanyData(dataCompanies)
             setUserData(dataUsers)
-            console.log(dataCompanies)
-            console.log(dataUsers)
+            // console.log(dataCompanies)
+            // console.log(dataUsers)
         })
     }, [session?.user?.email])
 
